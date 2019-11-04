@@ -2187,6 +2187,12 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
             listView.setAdapter(adapter);
             // Set layout manager to position the items
             listView.setLayoutManager(new LinearLayoutManager(this));
+
+            if (section_items.size() == 0) {
+                listView.setVisibility(View.GONE);
+            } else {
+                listView.setVisibility(View.VISIBLE);
+            }
         } else {
             //ArrayList<JSONObject> old_section_items = adapter.getItems();
             adapter.updateItems(section_items);
