@@ -458,8 +458,6 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
         // Clear agents
         clear_agents();
 
-
-
         // Store model to shared preference
         SharedPreferences pref = getSharedPreferences("model", 0);
         SharedPreferences.Editor editor = pref.edit();
