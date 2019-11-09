@@ -560,6 +560,8 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
             Log.d("Warning", e.getStackTrace()[0].getMethodName() + " : " + e.toString());
         }
 
+        setup_agents();
+        
         super.onResume();
 
         if (listState != null) {
