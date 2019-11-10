@@ -13,11 +13,14 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -53,6 +56,8 @@ import com.jasonette.seed.Component.JasonComponentFactory;
 import com.jasonette.seed.Component.JasonImageComponent;
 import com.jasonette.seed.Helper.JasonHelper;
 import com.jasonette.seed.Launcher.Launcher;
+import com.jasonette.seed.Service.ShakeDetector;
+import com.jasonette.seed.Service.ShakeDetector.OnShakeListener;
 import com.jasonette.seed.Service.agent.JasonAgentService;
 import com.jasonette.seed.Service.vision.JasonVisionService;
 import com.jasonette.seed.Lib.JasonToolbar;
@@ -78,7 +83,9 @@ import java.util.concurrent.Executors;
 
 import static com.bumptech.glide.Glide.with;
 
-public class JasonViewActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
+public class JasonViewActivity extends AppCompatActivity
+        implements OnRequestPermissionsResultCallback,
+    OnShakeListener {
     private JasonToolbar toolbar;
     private RecyclerView listView;
     public String url;
@@ -126,6 +133,9 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
     private boolean isexecuting = false;
     /* Variable for checking a savedInstanceState for loadURL in JasonAgentService */
     public boolean savedInstance = false;
+    private  SensorManager mSensorManager;
+    private  Sensor mAccelerometer;
+    private  ShakeDetector mShakeDetector;
 
     /*************************************************************
      *
@@ -148,6 +158,7 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
             }
         }
     }
+
 
 
     @Override
@@ -327,7 +338,31 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
             onRefresh();
         }
 
+        setupShakeDetector();
     }
+
+    private void setupShakeDetector() {
+        // ShakeDetector initialization
+        // The following are used for the shake detection
+
+        mSensorManager = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
+
+        if (mSensorManager != null) {
+            mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            if (mAccelerometer != null) {
+                mShakeDetector = new ShakeDetector();
+                mShakeDetector.setOnShakeListener(this);
+//            new OnShakeListener() {
+//                    @Override
+//                    public void onShake(int count) {
+//                        simple_trigger("$shake", new JSONObject(), JasonViewActivity.this);
+//                    }
+//                });
+            }
+        }
+
+    }
+
     private void setup_agents() {
         try {
             JSONObject head = model.jason.getJSONObject("$jason").getJSONObject("head");
@@ -458,8 +493,6 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
         // Clear agents
         clear_agents();
 
-
-
         // Store model to shared preference
         SharedPreferences pref = getSharedPreferences("model", 0);
         SharedPreferences.Editor editor = pref.edit();
@@ -483,6 +516,8 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
         } catch (Exception e) {
             Log.d("Warning", e.getStackTrace()[0].getMethodName() + " : " + e.toString());
         }
+
+        mSensorManager.unregisterListener(mShakeDetector);
 
         super.onPause();
     }
@@ -566,8 +601,8 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
             listView.getLayoutManager().onRestoreInstanceState(listState);
         }
 
+        mSensorManager.registerListener(mShakeDetector, mAccelerometer,	SensorManager.SENSOR_DELAY_UI);
     }
-
 
     // This gets executed automatically when an external intent returns with result
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -635,6 +670,15 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
         }
     }
 
+    public void onShake(int count){
+        try {
+//            JSONObject head = model.jason.getJSONObject("$jason").getJSONObject("head");
+//            JSONObject events = head.getJSONObject("actions");
+            simple_trigger("$shake", new JSONObject(), this);
+        } catch (Exception e){
+            Log.d("Warning", e.getStackTrace()[0].getMethodName() + " : " + e.toString());
+        }
+    }
 
     /*************************************************************
 
@@ -671,6 +715,7 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
             Log.d("Warning", e.getStackTrace()[0].getMethodName() + " : " + e.toString());
         }
     }
+
     void onLoad(){
         loaded = true;
         simple_trigger("$load", new JSONObject(), this);

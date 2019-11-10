@@ -26,7 +26,6 @@ import android.widget.LinearLayout;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.github.florent37.singledateandtimepicker.dialog.SingleDateAndTimePickerDialog;
 import com.jasonette.seed.Core.JasonViewActivity;
 import com.jasonette.seed.Helper.JasonHelper;
 import com.jasonette.seed.Helper.JasonImageHelper;
@@ -36,8 +35,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class JasonUtilAction {
     private int counter; // general purpose counter;
@@ -269,25 +266,25 @@ public class JasonUtilAction {
 
 
     public void datepicker(final JSONObject action, final JSONObject data, final JSONObject event, final Context context) {
-        new SingleDateAndTimePickerDialog.Builder(context)
-                .bottomSheet()
-                .curved()
-                //.minutesStep(15)
-                //.title("Simple")
-                .listener(new SingleDateAndTimePickerDialog.Listener() {
-                    @Override
-                    public void onDateSelected(Date date) {
-                        try {
-                            String val = String.valueOf(date.getTime()/1000);
-                            JSONObject value = new JSONObject();
-                            value.put("value", val);
-                            JasonHelper.next("success", action, value, event, context);
-                        } catch (Exception e) {
-                            Log.d("Warning", e.getStackTrace()[0].getMethodName() + " : " + e.toString());
-                        }
-
-                    }
-                }).display();
+//        new SingleDateAndTimePickerDialog.Builder(context)
+//                .bottomSheet()
+//                .curved()
+//                //.minutesStep(15)
+//                //.title("Simple")
+//                .listener(new SingleDateAndTimePickerDialog.Listener() {
+//                    @Override
+//                    public void onDateSelected(Date date) {
+//                        try {
+//                            String val = String.valueOf(date.getTime()/1000);
+//                            JSONObject value = new JSONObject();
+//                            value.put("value", val);
+//                            JasonHelper.next("success", action, value, event, context);
+//                        } catch (Exception e) {
+//                            Log.d("Warning", e.getStackTrace()[0].getMethodName() + " : " + e.toString());
+//                        }
+//
+//                    }
+//                }).display();
 
     }
 
