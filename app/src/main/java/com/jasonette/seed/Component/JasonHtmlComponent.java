@@ -33,6 +33,7 @@ public class JasonHtmlComponent {
             try {
                 String text = component.getString("text");
                 String html = text;
+
                 CookieManager.getInstance().setAcceptCookie(true);
                 ((AdvancedWebView) view).loadDataWithBaseURL("http://localhost/", html, "text/html", "utf-8", null);
                 ((AdvancedWebView) view).setWebChromeClient(new WebChromeClient());
@@ -44,6 +45,20 @@ public class JasonHtmlComponent {
                 settings.setDomStorageEnabled(true);
                 settings.setJavaScriptCanOpenWindowsAutomatically(true);
                 settings.setMediaPlaybackRequiresUserGesture(false);
+
+                Boolean hasRemoteURL = component.has("url");
+
+                if(hasRemoteURL) {
+                    //getting the target URL to load
+                    String url = component.getString("url");
+                    //navigating to the target URL
+                    ((AdvancedWebView) view).loadUrl(url);
+                    //scaling the webview to a percentage of its original value
+                    //so android can resize it again to fill the device width
+                    ((AdvancedWebView) view).setInitialScale(30);
+                    //this will make the webview to fill the device width
+                    settings.setUseWideViewPort(true);
+                }
 
                 settings.setAppCachePath( context.getCacheDir().getAbsolutePath() );
                 settings.setAllowFileAccess( true );
