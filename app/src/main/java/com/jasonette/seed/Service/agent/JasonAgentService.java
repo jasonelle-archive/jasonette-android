@@ -31,8 +31,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
-import im.delight.android.webview.AdvancedWebView;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -49,10 +47,10 @@ public class JasonAgentService {
     }
     private class JasonAgentInterface {
 
-        private AdvancedWebView agent;
+        private WebView agent;
         private Context context;
 
-        public JasonAgentInterface(AdvancedWebView agent, Context context) {
+        public JasonAgentInterface(WebView agent, Context context) {
             this.agent = agent;
             this.context = context;
         }
@@ -286,7 +284,7 @@ public class JasonAgentService {
 
     }
 
-    public AdvancedWebView setup(final JasonViewActivity context, final JSONObject options, final String id) {
+    public WebView setup(final JasonViewActivity context, final JSONObject options, final String id) {
 
         /**
 
@@ -307,7 +305,7 @@ public class JasonAgentService {
          NO => Ignore
 
          **/
-        AdvancedWebView agent;
+        WebView agent;
 
 
         /*******************************************
@@ -323,7 +321,7 @@ public class JasonAgentService {
         try {
             // An agent with the ID already exists
             if (context.agents.has(id)) {
-                agent = (AdvancedWebView) context.agents.get(id);
+                agent = (WebView) context.agents.get(id);
 
                 // No such agent exists yet. Create one.
             } else {
@@ -334,7 +332,7 @@ public class JasonAgentService {
 
                 // 2.1. Initialize
                 CookieManager.getInstance().setAcceptCookie(true);
-                agent = new AdvancedWebView(context);
+                agent = new WebView(context);
                 agent.getSettings().setDefaultTextEncodingName("utf-8");
 
                 if (id.startsWith("$webcontainer")) {
@@ -588,7 +586,7 @@ public class JasonAgentService {
             }
 
         } catch (Exception e) {
-            agent = new AdvancedWebView(context);
+            agent = new WebView(context);
             Log.d("Warning", e.getStackTrace()[0].getMethodName() + " : " + e.toString());
         }
         return agent;

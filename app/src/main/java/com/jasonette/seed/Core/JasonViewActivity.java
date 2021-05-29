@@ -82,8 +82,6 @@ import java.util.concurrent.Executors;
 
 import static com.bumptech.glide.Glide.with;
 
-import im.delight.android.webview.AdvancedWebView;
-
 public class JasonViewActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
     private JasonToolbar toolbar;
     private RecyclerView listView;
@@ -110,7 +108,7 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
     public RelativeLayout rootLayout;
     private ItemAdapter adapter;
     public View backgroundCurrentView;
-    public AdvancedWebView backgroundWebview;
+    public WebView backgroundWebview;
     public ImageView backgroundImageView;
     private SurfaceView backgroundCameraView;
     public JasonVisionService cameraManager;
@@ -561,9 +559,6 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
             if(intent_to_resolve != null) {
                 if(intent_to_resolve.has("type")){
                     ((Launcher)getApplicationContext()).trigger(intent_to_resolve, JasonViewActivity.this);
-                    if (intent_to_resolve.get("type") == "success") {
-                        backgroundWebview.onActivityResult(intent_to_resolve.getInt("name"), RESULT_OK, (Intent)intent_to_resolve.get("intent"));
-                    }
                     intent_to_resolve = null;
                 }
             }

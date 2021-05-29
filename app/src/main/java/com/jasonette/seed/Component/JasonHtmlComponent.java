@@ -13,14 +13,13 @@ import com.jasonette.seed.Core.JasonViewActivity;
 
 import org.json.JSONObject;
 
-import im.delight.android.webview.AdvancedWebView;
 
 public class JasonHtmlComponent {
 
     public static View build(View view, final JSONObject component, final JSONObject parent, final Context context) {
         if(view == null){
             try {
-                AdvancedWebView webview = new AdvancedWebView(context);
+                WebView webview = new WebView(context);
                 webview.getSettings().setDefaultTextEncodingName("utf-8");
 
                 return webview;
@@ -34,10 +33,10 @@ public class JasonHtmlComponent {
                 String text = component.getString("text");
                 String html = text;
                 CookieManager.getInstance().setAcceptCookie(true);
-                ((AdvancedWebView) view).loadDataWithBaseURL("http://localhost/", html, "text/html", "utf-8", null);
-                ((AdvancedWebView) view).setWebChromeClient(new WebChromeClient());
-                ((AdvancedWebView) view).setVerticalScrollBarEnabled(false);
-                ((AdvancedWebView) view).setHorizontalScrollBarEnabled(false);
+                ((WebView) view).loadDataWithBaseURL("http://localhost/", html, "text/html", "utf-8", null);
+                ((WebView) view).setWebChromeClient(new WebChromeClient());
+                ((WebView) view).setVerticalScrollBarEnabled(false);
+                ((WebView) view).setHorizontalScrollBarEnabled(false);
                 WebSettings settings = ((WebView) view).getSettings();
                 settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
                 settings.setJavaScriptEnabled(true);
@@ -63,12 +62,12 @@ public class JasonHtmlComponent {
                 }
                 if(responds_to_webview){
                     // webview receives click
-                    ((AdvancedWebView) view).setOnTouchListener(null);
+                    ((WebView) view).setOnTouchListener(null);
                     // Don't add native listener to this component
                 } else {
                     // webview shouldn't receive click
 
-                    ((AdvancedWebView)view).setOnTouchListener(new View.OnTouchListener() {
+                    ((WebView)view).setOnTouchListener(new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View v, MotionEvent event) {
                             JSONObject component = (JSONObject)v.getTag();
