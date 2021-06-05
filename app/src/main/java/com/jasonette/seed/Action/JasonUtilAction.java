@@ -104,8 +104,18 @@ public class JasonUtilAction {
                     final ArrayList<EditText> textFields = new ArrayList<EditText>();
                     if (action.has("options")) {
                         options = action.getJSONObject("options");
-                        String title = options.get("title").toString();
-                        String description = options.get("description").toString();
+
+                        String title = "";
+                        String description = "";
+
+                        if (options.has("title")) {
+                            title = options.get("title").toString();
+                        }
+
+                        if (options.has("description")) {
+                            description = options.get("description").toString();
+                        }
+
                         builder.setTitle(title);
                         builder.setMessage(description);
 
