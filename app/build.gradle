@@ -16,7 +16,8 @@ android {
     defaultConfig {
         applicationId "com.jasonette"
         minSdkVersion 22
-        targetSdkVersion 22
+        // Android 8 is the minimum required for the playstore
+        targetSdkVersion 26
         versionCode 3
         versionName "0.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
