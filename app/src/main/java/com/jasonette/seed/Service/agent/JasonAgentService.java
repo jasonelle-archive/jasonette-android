@@ -379,10 +379,12 @@ public class JasonAgentService {
                         try {
                             String injection_script = JasonHelper.read_file("agent", context);
                             String interface_script = "$agent.interface.postMessage = function(r) { JASON.postMessage(JSON.stringify(r)); };";
+                            String injection_custom_script = JasonHelper.read_file("file/custom.js", context);
+
                             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                                view.evaluateJavascript(injection_script + " " + interface_script, null);
+                                view.evaluateJavascript(injection_script + " " + interface_script + " " + injection_custom_script, null);
                             } else {
-                                view.loadUrl("javascript:" + injection_script + " " + interface_script);
+                                view.loadUrl("javascript:" + injection_script + " " + interface_script + " " + injection_custom_script);
                             }
 
                             if (pending.has(id)) {
