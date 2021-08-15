@@ -114,6 +114,8 @@ public class Launcher extends Application {
 
     @Override
     public void onCreate() {
+
+        setTheme(R.style.AppTheme);
         super.onCreate();
 
         ViewTarget.setTagId(R.id.glide_request);
