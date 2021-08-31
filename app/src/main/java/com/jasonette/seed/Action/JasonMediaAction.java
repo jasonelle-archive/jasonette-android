@@ -1,7 +1,10 @@
 package com.jasonette.seed.Action;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -9,6 +12,9 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.commonsware.cwac.cam2.AbstractCameraActivity;
 import com.commonsware.cwac.cam2.CameraActivity;
@@ -130,6 +136,15 @@ public class JasonMediaAction {
 
         try {
 
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.CAMERA}, 51);
+                    ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 51);
+                }
+            }
+
             AbstractCameraActivity.Quality q = AbstractCameraActivity.Quality.LOW;
             String type = "photo";
             Boolean edit = false;
@@ -203,6 +218,7 @@ public class JasonMediaAction {
             callback.put("class", "JasonMediaAction");
             callback.put("method", "process");
             JasonHelper.dispatchIntent(action, data, event, context, intent, callback);
+
         } catch (SecurityException e){
             JasonHelper.permission_exception("$media.camera", context);
         } catch (Exception e) {
