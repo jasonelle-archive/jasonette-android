@@ -46,3 +46,6 @@ $agent={
   }
 };
 
+// Ensure $agent is present in the window global
+window.$agent = $agent;
+
