@@ -15,8 +15,9 @@ android {
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "com.jasonette"
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdkVersion 22
+        // Android 8 is the minimum required for the playstore
+        targetSdkVersion 26
         versionCode 3
         versionName "0.1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

@@ -6,4 +6,7 @@
     <style name="CameraTheme" parent="android:Theme.DeviceDefault">
     </style>
 
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/launch</item>
+    </style>
 </resources>

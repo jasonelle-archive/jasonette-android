@@ -2111,6 +2111,7 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
                                     try {
                                         JSONObject action = head.getJSONObject("actions").getJSONObject("$pull");
                                         call(action.toString(), new JSONObject().toString(), "{}", JasonViewActivity.this);
+                                        swipeLayout.setRefreshing(false);
                                     } catch (Exception e) {
                                         Log.d("Warning", e.getStackTrace()[0].getMethodName() + " : " + e.toString());
                                     }

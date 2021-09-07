@@ -1,14 +1,22 @@
 package com.jasonette.seed.Action;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.commonsware.cwac.cam2.AbstractCameraActivity;
 import com.commonsware.cwac.cam2.CameraActivity;
@@ -124,11 +132,76 @@ public class JasonMediaAction {
         }
 
     }
+
+    // Just ask the permissions
+    // $media.permissions
+    public void permissions(final JSONObject action, JSONObject data, final JSONObject event, final Context context) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+
+                    if(action.has("options")) {
+                        JSONObject options = action.getJSONObject("options");
+                        String type = "all";
+                        if (options.has("type")) {
+
+                            type = options.getString("type");
+
+                            if (type.equalsIgnoreCase("camera")) {
+                                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.CAMERA}, 100);
+                            }
+
+                            if (type.equalsIgnoreCase("files")) {
+                                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 101);
+                            }
+
+                            if (type.equalsIgnoreCase("all")) {
+                                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE}, 151);
+                            }
+
+                        } else {
+                            ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE}, 251);
+                        }
+                    } else {
+                        ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE}, 51);
+                    }
+                }
+            }
+
+            // We need at least 100 ms to call the success with the result
+            // If not then it will be omitted since it will too fast 
+            // for the system to process.
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        JSONObject ret = new JSONObject();
+                        ret.put("files", ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+                        ret.put("camera", ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED);
+                        JasonHelper.next("success", action, ret, event, context);
+                    }  catch (Exception e) {
+                        Log.d("Warning", e.getStackTrace()[0].getMethodName() + " : " + e.toString());
+                    }
+                }
+            }, 100); // Millisecond 1000 = 1 sec
+
+        } catch (SecurityException e){
+            JasonHelper.permission_exception("$media.permissions", context);
+        } catch (Exception e) {
+            Log.d("Warning", e.getStackTrace()[0].getMethodName() + " : " + e.toString());
+        }
+    }
+
     public void camera(final JSONObject action, JSONObject data, final JSONObject event, final Context context) {
 
-        // Image picker intent
-
         try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                        || ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.CAMERA}, 51);
+                }
+            }
 
             AbstractCameraActivity.Quality q = AbstractCameraActivity.Quality.LOW;
             String type = "photo";
@@ -203,6 +276,7 @@ public class JasonMediaAction {
             callback.put("class", "JasonMediaAction");
             callback.put("method", "process");
             JasonHelper.dispatchIntent(action, data, event, context, intent, callback);
+
         } catch (SecurityException e){
             JasonHelper.permission_exception("$media.camera", context);
         } catch (Exception e) {
