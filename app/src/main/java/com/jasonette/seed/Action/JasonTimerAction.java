@@ -41,6 +41,22 @@ public class JasonTimerAction {
                     Boolean repeats = options.has("repeats");
                     final int interval = (int)(Float.valueOf(options.getString("interval"))*1000);
                     final JSONObject timerAction = options.getJSONObject("action");
+                    
+                    //if 'repeat' property exists, it will read the boolean value
+                    //before this fix, the value 'repeat = false' would still trigger the repeat function
+                    
+                    if(repeats) {
+                        repeats = options.getBoolean("repeats");
+                    }
+                    
+                    //this is a new field implementation called 'skip'. It gives an alternate option to the repeating loop
+                    //if false, or undefined, it will do nothing. But if set to 'true', it will trigger the interval, but will skip the first iteration
+                    Boolean skipFirstInteraction = options.has("skip");
+                    
+                    if(skipFirstInteraction) {
+                        skipFirstInteraction = options.getBoolean("skip");
+                    }
+
 
                     if(repeats) {
                         final Runnable runnableCode = new Runnable() {
@@ -54,7 +70,14 @@ public class JasonTimerAction {
                                 handler.postDelayed(this, interval);
                             }
                         };
-                        handler.post(runnableCode);
+                        
+                        //if skip = true, it will delay the first iteration
+                        if (skipFirstInteraction) {
+                            handler.postDelayed(runnableCode, interval);
+                        } else {
+                            //skip = false or null/undefined
+                            handler.post(runnableCode);
+                        }
 
                         // Register timer
                         timers.put(name, runnableCode);

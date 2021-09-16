@@ -4,9 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Sentimental Versioning](http://sentimentalversioning.org/).
 
-## [3.0.0] Next Release
+## [2.1.0] Next Release
 
-This version is the current in development. Will be released after the week of *6th November 2020*.
+### Added
+
+- Mixin POST [PR #21](https://github.com/jasonelle/jasonette-android/pull/21)
+
+### Changed
+
+- Normal Webview now is Advanced Webview (Enables file uploading) [PR #19](https://github.com/jasonelle/jasonette-android/pull/19)
+
+### Fixed
+
+- Fixed stack overflow error in $geo.get action [PR #20](https://github.com/jasonelle/jasonette-android/pull/20)
 
 ## [2.0.0](https://github.com/jasonelle/jasonelle/releases/tag/v2.0)
 

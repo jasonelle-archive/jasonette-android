@@ -14,7 +14,7 @@ Releases are made in the [Jasonelle Repo](https://github.com/jasonelle/jasonelle
 
 - [Jasonette v2.0.0](https://github.com/jasonelle/jasonelle/releases/tag/v2.0).
 
-- Jasonette *v3.0.0* (In Progress).
+- Jasonette *v2.1.0* (In Progress).
 
 ## [Contribution](CONTRIBUTING.md)
 

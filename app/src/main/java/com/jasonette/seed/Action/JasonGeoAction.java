@@ -76,16 +76,32 @@ public class JasonGeoAction {
                         && ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 51);
                 } else {
-                    getLocationManagerInfo(action, event, context);
+                    //get the "options"->"distance" value. If not set, minDistance = 0
+                    int distance = 0;
+                    if (action.has("options")) {
+                        JSONObject options = action.getJSONObject("options");
+                        if(options.has("distance")) {
+                            distance = Integer.parseInt(options.getString("distance"));
+                        }
+                    }
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, distance, locationListener, Looper.getMainLooper());
                 }
             } else {
-                getLocationManagerInfo(action, event, context);
+                //get the "options"->"distance" value. If not set, minDistance = 0
+                    int distance = 0;
+                    if (action.has("options")) {
+                        JSONObject options = action.getJSONObject("options");
+                        if(options.has("distance")) {
+                            distance = Integer.parseInt(options.getString("distance"));
+                        }
+                    }
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, distance, locationListener, Looper.getMainLooper());
             }
         } catch (SecurityException e){
             JasonHelper.permission_exception("$geo.get", context);
         } catch (Exception e) {
             Log.d("Warning", e.getStackTrace()[0].getMethodName() + " : " + e.toString());
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener, Looper.getMainLooper());
     }
 }
+

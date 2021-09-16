@@ -952,6 +952,7 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
     private void exec(final JSONObject action, final JSONObject data, final JSONObject event, final Context context){
         try {
             String type = action.getString("type");
+            Log.d("Debug", "Exec Type: " + type);
             if (type.startsWith("$") || type.startsWith("@")){
 
                 String[] tokens = type.split("\\.");
@@ -2105,6 +2106,7 @@ public class JasonViewActivity extends AppCompatActivity implements ActivityComp
                                     try {
                                         JSONObject action = head.getJSONObject("actions").getJSONObject("$pull");
                                         call(action.toString(), new JSONObject().toString(), "{}", JasonViewActivity.this);
+                                        swipeLayout.setRefreshing(false);
                                     } catch (Exception e) {
                                         Log.d("Warning", e.getStackTrace()[0].getMethodName() + " : " + e.toString());
                                     }
