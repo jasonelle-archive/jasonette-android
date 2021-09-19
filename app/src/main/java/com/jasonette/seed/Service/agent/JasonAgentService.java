@@ -529,6 +529,33 @@ public class JasonAgentService {
                 settings.setAllowFileAccess(true);
                 settings.setAppCacheEnabled(true);
                 settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+                
+                // Check for special options in background webview
+                /* Example JSON
+                "body": {
+                    "background": {
+                        "type": "html",
+                        "url": "http://google.com",
+                        "options": {
+                            "useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36"
+                        },
+                        "style": {
+                            "background": "#ffffff",
+                            "progress" : "rgba(0,0,0,0)"
+                        },
+                        "action": {
+                            "type": "$default"
+                        }
+                    }
+                }
+                */
+                if (options.has("options")) {
+                    // Allows custom user agent for the webview
+                    if (options.getJSONObject("options").has("useragent")) {
+                        Log.d("Debug", "Using custom user agent: " + options.getJSONObject("options").getString("useragent"));
+                        settings.setUserAgentString(options.getJSONObject("options").getString("useragent"));
+                    }
+                }
 
                 // 2.2. Create and Attach JavaScript Interface
                 JasonAgentInterface agentInterface = new JasonAgentInterface(agent, context);
