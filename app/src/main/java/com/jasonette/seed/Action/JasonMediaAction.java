@@ -5,12 +5,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
@@ -23,6 +25,7 @@ import com.commonsware.cwac.cam2.CameraActivity;
 import com.commonsware.cwac.cam2.VideoRecorderActivity;
 import com.commonsware.cwac.cam2.ZoomStyle;
 import com.jasonette.seed.Helper.JasonHelper;
+import com.jasonette.seed.Launcher.Launcher;
 
 import org.json.JSONObject;
 
@@ -94,6 +97,80 @@ public class JasonMediaAction {
      *
      **********************************/
 
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "1mind_" + timeStamp + ".jpg";
+        File photo = new File(Environment.getExternalStorageDirectory(),  imageFileName);
+        return photo;
+    }
+
+    private File mTempImage;
+
+    public Intent makePhotoIntent(String title, Context context){
+
+        //Build galleryIntent
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        galleryIntent.setType("image/*");
+
+        //Create chooser
+        Intent chooser = Intent.createChooser(galleryIntent,title);
+
+        Intent  cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        mTempImage = null;
+        try {
+            mTempImage = createImageFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (mTempImage != null){
+            cameraIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri.fromFile(mTempImage));
+            Intent[] extraIntents = {cameraIntent};
+            chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, extraIntents);
+        }
+
+        return chooser;
+    }
+
+
+    public void pickerAndCamera(final JSONObject action, JSONObject data, final JSONObject event, final Context context) {
+
+        // Image picker intent
+        try {
+            String type = "image";
+            if(action.has("options")){
+                if(action.getJSONObject("options").has("type")){
+                    type = action.getJSONObject("options").getString("type");
+                }
+            }
+
+            Intent intent;
+            if(type.equalsIgnoreCase("video")){
+                // video
+                intent = new Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
+            } else {
+                // image
+                intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            }
+
+            intent = makePhotoIntent("pickerAndCamera", context);
+
+            // dispatchIntent method
+            // 1. triggers an external Intent
+            // 2. attaches a callback with all the payload so that we can pick it up where we left off when the intent returns
+
+            // the callback needs to specify the class name and the method name we wish to trigger after the intent returns
+            JSONObject callback = new JSONObject();
+            callback.put("class", "JasonMediaAction");
+            callback.put("method", "process");
+
+            JasonHelper.dispatchIntent(action, data, event, context, intent, callback);
+        } catch (SecurityException e){
+            JasonHelper.permission_exception("$media.picker", context);
+        } catch (Exception e) {
+            Log.d("Warning", e.getStackTrace()[0].getMethodName() + " : " + e.toString());
+        }
+    }
 
     public void picker(final JSONObject action, JSONObject data, final JSONObject event, final Context context) {
 
